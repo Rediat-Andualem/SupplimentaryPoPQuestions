@@ -6,7 +6,7 @@ const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
+const config = require(__dirname + '/../config/config.js')[env];
 const db = {};
 
 let sequelize;
@@ -16,6 +16,7 @@ if (config.use_env_variable) {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
+// Load models dynamically
 fs
   .readdirSync(__dirname)
   .filter(file => {
@@ -31,13 +32,36 @@ fs
     db[model.name] = model;
   });
 
+// Debug loaded models
+console.log("✅ Loaded models:", Object.keys(db));
+
+// Set up associations
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
 });
 
+// Sequelize references
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
+// Sequential sync function with debug
+db.syncTablesInOrder = async () => {
+  try {
+    if (!db.Courses || !db.Instructor || !db.QuestionAndAnswerTable) {
+      console.error("❌ One or more models missing. Check your model exports and naming.");
+      console.log("Available models in db object:", Object.keys(db));
+      throw new Error("Missing required models for syncing.");
+    }
+
+    await db.Courses.sync({ alter: true });
+    await db.Instructor.sync({ alter: true });
+    await db.QuestionAndAnswerTable.sync({ alter: true });
+    console.log('✅ Tables created in order successfully');
+  } catch (error) {
+    console.error('❌ Error syncing tables:', error);
+  }
+};
 
 module.exports = db;
