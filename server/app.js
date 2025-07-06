@@ -3,7 +3,7 @@ const cors = require('cors');
 const db = require('./models');
 const {AllRouters}= require('./Router.js');
 const dotenv = require('dotenv')
-
+require('./Schedules/cronCleaner.js');
 
 dotenv.config();
 const app = express();

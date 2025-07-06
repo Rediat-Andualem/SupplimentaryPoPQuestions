@@ -327,6 +327,161 @@ const { instructorId, role} = req.body;
   }
 }
 
+
+const forgotPassword = async (req, res) => {
+  const { instructorEmail } = req.body;
+
+  try {
+    const findInstructor = await Instructor.findOne({
+      attributes: ["instructorId", "instructorEmail"],
+      where: { userEmail : instructorEmail },
+    });
+
+    if (!findInstructor) {
+      return res.status(404).json({ message: "Password Reset Email sent!." });
+    }
+
+    const updateLink = `${process.env.FRONTEND_URL}/reset-password/${findInstructor.instructorEmail}`;
+    const mailSender = nodemailer.createTransport({
+      service: "gmail",
+      port: 465,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const emailContent = {
+      from: process.env.EMAIL_USER,
+      to: user.userEmail,
+      subject: "Password Reset Request",
+      html: `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Update Password</title>
+          <style>
+              body {
+                  font-family: Arial, sans-serif;
+                  background-color: #f6f6f6;
+                  margin: 0;
+                  padding: 0;
+              }
+              .container {
+                  max-width: 600px;
+                  margin: 0 auto;
+                  background-color: #ffffff;
+                  padding: 20px;
+                  border-radius: 8px;
+                  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                  border: 1px solid #cccccc;
+              }
+              .header {
+                  text-align: center;
+                  padding: 10px 0;
+              }
+              .header img {
+                  max-width: 100px;
+              }
+              .content {
+                  text-align: center;
+                  padding: 20px;
+              }
+              .cta-button {
+                  display: inline-block;
+                  padding: 15px 25px;
+                  margin: 20px 0;
+                  background-color: #A34054;
+                  color: #ffffff !important;
+                  font-weight: bold;
+                  text-decoration: none;
+                  border-radius: 5px;
+              }
+              .footer {
+                  text-align: center;
+                  padding: 10px 0;
+                  font-size: 12px;
+                  color: #777777;
+              }
+          </style>
+      </head>
+      <body>
+          <div class="container">
+               <div class="header">
+        </div>
+              <div class="content">
+                  <h1>Update your password</h1>
+                  <p>Click the button below to update your password.</p>
+                  <a href="${updateLink}" class="cta-button">Update Password</a>
+          </div>
+          <div class="footer">
+              <p>Link will expire in <b>5min</b><p>
+              <br>
+              <p>If you did not sign up for this account, please ignore this email.</p>
+          </div>
+      </div>
+      </body>
+      </html>
+    `,
+    };
+
+    mailSender.sendMail(emailContent, (err, info) => {
+      if (err) {
+        console.error("Error sending email:", err);
+        return res.status(500).json({ message: "Error sending email." });
+      } else {
+        console.log("Email sent:", info.response);
+        return res.status(200).json({ message: "Password reset email sent." });
+      }
+    });
+
+  } catch (error) {
+    console.error("Forgot password error:", error.message);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+
+const updateUserPassword = async (req, res) => {
+  const { user_new_password } = req.body;
+  const { instructorId } = req.params;
+
+  try {
+    const userData = await Instructor.findOne({
+      attributes: ["instructorId"],
+      where: { instructorId },
+    });
+
+    if (!userData) {
+      return res.status(404).json({ message: "Instructor not found" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(user_new_password, salt);
+
+    const [updated] = await Instructor.update(
+      {
+        instructorPassword: hashedPassword,
+      },
+      { where: { instructorId } }
+    );
+
+    if (updated > 0) {
+      return res.status(200).json({ message: "Password updated successfully." });
+    } else {
+      return res.status(500).json({ message: "Failed to update password." });
+    }
+  } catch (error) {
+    console.error("Error updating password:", error.message);
+    return res.status(500).json({
+      message: "Internal server error. Please try again later.",
+    });
+  }
+};
+
+
 module.exports = {
   registerInstructor,
   InstructorVerification,
@@ -336,5 +491,7 @@ module.exports = {
   getInstructorsForVerification,
   getAllInstructorsProfile,
   instructorLogIn,
-  updateInstructorRole
+  updateInstructorRole,
+  forgotPassword,
+  updateUserPassword
 };
