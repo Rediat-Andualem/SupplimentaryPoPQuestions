@@ -16,7 +16,7 @@ function Header() {
 
   const forHome = () => {
     if(auth){
-      navigate("/submitdb");
+      navigate("/home");
     }else{
       navigate('/signupLogIn')
     }

@@ -2,12 +2,12 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Spinner from 'react-bootstrap/Spinner'; // Import Spinner for the loading effect
 import styles from './EmailForPasswrod.module.css';
-import { axiosInstance } from '../../utility/axiosInstance';
+import { axiosInstance } from '../../Utility/axiosInstance';
 import { useState } from 'react';
 
 function EmailForPassword() {
   const [response, setResponse] = useState('');
-  const [user_email, setEmail] = useState('');
+  const [instructorEmail, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false); 
 
   const sendEmail = async (e) => {
@@ -16,7 +16,7 @@ function EmailForPassword() {
     setResponse('');
 
     try {
-      const res = await axiosInstance.post('/users/forgotPassword', user_email);
+      const res = await axiosInstance.post('/Instructor/emailForPassword', instructorEmail);
       setResponse(res?.data?.message);
     } catch (err) {
       setResponse(err?.response?.data?.message);
@@ -27,8 +27,8 @@ function EmailForPassword() {
 
   const handleChange = (e) => {
     switch (e.target.name) {
-      case 'email':
-        setEmail((pre) => ({ ...pre, email: e.target.value }));
+      case 'instructorEmail':
+        setEmail((pre) => ({ ...pre, instructorEmail: e.target.value }));
         break;
       default:
         break;
@@ -40,7 +40,7 @@ function EmailForPassword() {
       <Form.Group className="mb-3" controlId="formBasicEmail">
         <Form.Control
           type="email"
-          name="email"
+          name="instructorEmail"
           placeholder="Enter email"
           onChange={handleChange}
           required

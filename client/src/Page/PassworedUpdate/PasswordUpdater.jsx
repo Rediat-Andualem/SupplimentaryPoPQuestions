@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import styles from './PasswordUpdater.module.css';
-import { axiosInstance } from '../../utility/axiosInstance';
+import { axiosInstance } from '../../Utility/axiosInstance';
 import { useParams, useNavigate } from 'react-router-dom';
 
 function PasswordUpdater() {
@@ -34,7 +34,7 @@ function PasswordUpdater() {
     }
 
     try {
-      await axiosInstance.post(`users/updatePassword/${userId}`, {  
+      await axiosInstance.post(`/Instructor/updatePassword/${userId}`, {  
         user_new_password: newPassword,
       });
 

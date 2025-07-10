@@ -209,11 +209,4 @@ const cleanUnlinkedFiles = async (req,res)=> {
   }
 }
 
-
-
-
-
-
-
-
-module.exports = { uploadQuestionAndAnswer,sendQuestionFiles,sendAnswerFiles,deleteQuestionAndAnswer,cleanUnlinkedFiles};
+module.exports = { uploadQuestionAndAnswer,sendQuestionFiles,sendAnswerFiles,deleteQuestionAndAnswer,cleanUnlinkedFiles};  

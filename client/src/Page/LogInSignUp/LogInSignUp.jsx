@@ -2,18 +2,47 @@ import { useState, useEffect } from "react";
 import "./LogInSignUp.css";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
-import { axiosInstance } from "../../utility/axiosInstance";
+import { axiosInstance } from "../../Utility/axiosInstance";
 import useSignIn from "react-auth-kit/hooks/useSignIn";
 import { jwtDecode } from "jwt-decode";
+
 
 function LogInSignUp({ errorStatus }) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(null);
+  const [allCourses, setAllCourses] = useState([]);
 
   const navigate = useNavigate();
   const signIn = useSignIn();
+
+  const [signupData, setSignupData] = useState({
+    instructorFirstName: "",
+    instructorLastName: "",
+    instructorEmail: "",
+    instructorAssignedCourse: "",
+    instructorPassword: "",
+  });
+
+  const [loginData, setLoginData] = useState({
+    instructorEmail: "",
+    instructorPassword: "",
+  });
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  const fetchCourses = async () => {
+    try {
+      const response = await axiosInstance.get("/Course/getAllCourses");
+      setAllCourses(response?.data.courses);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to fetch courses.");
+    }
+  };
 
   useEffect(() => {
     if (
@@ -24,22 +53,6 @@ function LogInSignUp({ errorStatus }) {
     }
   }, [errorStatus]);
 
-  const [signupData, setSignupData] = useState({
-    userFirstName: "",
-    userLastName: "",
-    userEmail: "",
-    userPhoneNumber: "",
-    Group: "",
-    Batch: "",
-    Year: "",
-    password: "",
-  });
-
-  const [loginData, setLoginData] = useState({
-    userEmail: "",
-    password: "",
-  });
-
   const handleSignupChange = (e) => {
     setSignupData({ ...signupData, [e.target.name]: e.target.value });
   };
@@ -48,102 +61,6 @@ function LogInSignUp({ errorStatus }) {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
 
-  // const handleSignup = async (e) => {
-  //   e.preventDefault();
-  //   setError(null);
-  //   setSuccess(null);
-
-  //   const nameRegex = /^[A-Za-z]+$/;
-  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   const phoneRegex = /^\+\d{6,15}$/;
-
-  //   if (
-  //     !nameRegex.test(signupData.userFirstName) ||
-  //     signupData.userFirstName.length > 15
-  //   ) {
-  //     setError(
-  //       "First name should contain only letters and not exceed 15 characters."
-  //     );
-  //     return;
-  //   }
-
-  //   if (
-  //     !nameRegex.test(signupData.userLastName) ||
-  //     signupData.userLastName.length > 15
-  //   ) {
-  //     setError(
-  //       "Last name should contain only letters and not exceed 15 characters."
-  //     );
-  //     return;
-  //   }
-
-  //   if (!emailRegex.test(signupData.userEmail)) {
-  //     setError("Please enter a valid email address.");
-  //     return;
-  //   }
-
-  //   if (!phoneRegex.test(signupData.userPhoneNumber)) {
-  //     setError(
-  //       "Phone number must start with a country code '+1345... or +251.."
-  //     );
-  //     return;
-  //   }
-
-  //   if (signupData.password.length < 6) {
-  //     setError("Password must be at least 6 characters long.");
-  //     return;
-  //   }
-
-  //   setLoading(true);
-
-  //   try {
-  //     const res = await axiosInstance.post("/users/createUser", signupData);
-  //     // setSuccess(res?.data?.message);
-  //     setSignupData({
-  //       userFirstName: "",
-  //       userLastName: "",
-  //       userEmail: "",
-  //       userPhoneNumber: "",
-  //       Group: "",
-  //       Batch: "",
-  //       Year: "",
-  //       password: "",
-  //     });
-
-  //     const token = res.headers["authorization"]?.split(" ")[1];
-  //     const decodedToken = jwtDecode(token);
-
-  //     if (token) {
-  //       if (
-  //         signIn({
-  //           auth: {
-  //             token,
-  //             type: "Bearer",
-  //             expiresIn: 4320,
-  //           },
-  //           userState: {
-  //             userId: decodedToken.userId,
-  //             userEmail: decodedToken.userEmail,
-  //             userName: decodedToken.userFirstName,
-  //             role: decodedToken.role,
-  //             authStatus: true,
-  //           },
-  //         })
-  //       ) {
-  //         navigate("/submitdb");
-  //       } else {
-  //         navigate("/");
-  //       }
-  //     }
-  //   } catch (err) {
-  //     console.log(err);
-  //     setError(
-  //       err?.response?.data?.errors || "Signup failed, please try again."
-  //     );
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
   const handleSignup = async (e) => {
     e.preventDefault();
     setError(null);
@@ -151,73 +68,58 @@ function LogInSignUp({ errorStatus }) {
 
     const trimmedSignupData = {
       ...signupData,
-      userFirstName: signupData.userFirstName.trim(),
-      userLastName: signupData.userLastName.trim(),
-      userEmail: signupData.userEmail.trim(),
-      userPhoneNumber: signupData.userPhoneNumber.trim(),
-      Group: signupData.Group.trim(),
-      Batch: signupData.Batch.trim(),
-      Year: signupData.Year.toString().trim(),
+      instructorFirstName: signupData.instructorFirstName.trim(),
+      instructorLastName: signupData.instructorLastName.trim(),
+      instructorEmail: signupData.instructorEmail.trim(),
+      instructorAssignedCourse: signupData.instructorAssignedCourse.trim(),
+      instructorPassword: signupData.instructorPassword.trim(),
     };
 
     const nameRegex = /^[A-Za-z]+$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^\+\d{6,15}$/;
 
     if (
-      !nameRegex.test(trimmedSignupData.userFirstName) ||
-      trimmedSignupData.userFirstName.length > 15
+      !nameRegex.test(trimmedSignupData.instructorFirstName) ||
+      trimmedSignupData.instructorFirstName.length > 15
     ) {
-      setError(
-        "First name should contain only letters and not exceed 15 characters."
-      );
+      setError("First name should contain only letters and not exceed 15 characters.");
       return;
     }
 
     if (
-      !nameRegex.test(trimmedSignupData.userLastName) ||
-      trimmedSignupData.userLastName.length > 15
+      !nameRegex.test(trimmedSignupData.instructorLastName) ||
+      trimmedSignupData.instructorLastName.length > 15
     ) {
-      setError(
-        "Last name should contain only letters and not exceed 15 characters."
-      );
+      setError("Last name should contain only letters and not exceed 15 characters.");
       return;
     }
 
-    if (!emailRegex.test(trimmedSignupData.userEmail)) {
+    if (!emailRegex.test(trimmedSignupData.instructorEmail)) {
       setError("Please enter a valid email address.");
       return;
     }
 
-    if (!phoneRegex.test(trimmedSignupData.userPhoneNumber)) {
-      setError(
-        "Phone number must start with a country code '+1345... or +251.."
-      );
+    if (trimmedSignupData.instructorPassword.length < 6) {
+      setError("Password must be at least 6 characters long.");
       return;
     }
 
-    if (signupData.password.length < 6) {
-      setError("Password must be at least 6 characters long.");
+    if (!trimmedSignupData.instructorAssignedCourse) {
+      setError("Please select a course.");
       return;
     }
 
     setLoading(true);
 
     try {
-      const res = await axiosInstance.post(
-        "/users/createUser",
-        trimmedSignupData
-      );
+      const res = await axiosInstance.post("/Instructor/createInstructorProfile", trimmedSignupData);
 
       setSignupData({
-        userFirstName: "",
-        userLastName: "",
-        userEmail: "",
-        userPhoneNumber: "",
-        Group: "",
-        Batch: "",
-        Year: "",
-        password: "",
+        instructorFirstName: "",
+        instructorLastName: "",
+        instructorEmail: "",
+        instructorAssignedCourse: "",  
+        instructorPassword: "",
       });
 
       const token = res.headers["authorization"]?.split(" ")[1];
@@ -233,67 +135,25 @@ function LogInSignUp({ errorStatus }) {
             },
             userState: {
               userId: decodedToken.userId,
-              userEmail: decodedToken.userEmail,
-              userName: decodedToken.userFirstName,
+              instructorEmail: decodedToken.instructorEmail,
+              userName: decodedToken.instructorFirstName,
               role: decodedToken.role,
               authStatus: true,
             },
           })
         ) {
-          navigate("/submitdb");
+          navigate("/home");
         } else {
           navigate("/");
         }
       }
     } catch (err) {
       console.log(err);
-      setError(
-        err?.response?.data?.errors || "Signup failed, please try again."
-      );
+      setError(err?.response?.data?.errors || "Signup failed, please try again.");
     } finally {
       setLoading(false);
     }
   };
-
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   setError(null);
-  //   setSuccess(null);
-
-  //   try {
-  //     const res = await axiosInstance.post("/users/login", loginData);
-  //     const token = res.headers["authorization"]?.split(" ")[1];
-  //     const decodedToken = jwtDecode(token);
-
-  //     if (token) {
-  //       if (
-  //         signIn({
-  //           auth: {
-  //             token,
-  //             type: "Bearer",
-  //             expiresIn: 4320,
-  //           },
-  //           userState: {
-  //             userId: decodedToken.userId,
-  //             userEmail: decodedToken.userEmail,
-  //             userName: decodedToken.userFirstName,
-  //             role: decodedToken.role,
-  //             authStatus: true,
-  //           },
-  //         })
-  //       ) {
-  //         navigate("/submitdb");
-  //       } else {
-  //         navigate("/");
-  //       }
-  //     }
-  //   } catch (err) {
-  //     setError(err?.response?.data?.message || "Invalid email or password");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -302,12 +162,12 @@ function LogInSignUp({ errorStatus }) {
     setSuccess(null);
 
     const trimmedLoginData = {
-      userEmail: loginData.userEmail.trim(),
-      password: loginData.password,
+      instructorEmail: loginData.instructorEmail.trim(),
+      instructorPassword: loginData.instructorPassword,
     };
 
     try {
-      const res = await axiosInstance.post("/users/login", trimmedLoginData);
+      const res = await axiosInstance.post("/Instructor/instructorLogin", trimmedLoginData);
       const token = res.headers["authorization"]?.split(" ")[1];
       const decodedToken = jwtDecode(token);
 
@@ -321,14 +181,14 @@ function LogInSignUp({ errorStatus }) {
             },
             userState: {
               userId: decodedToken.userId,
-              userEmail: decodedToken.userEmail,
-              userName: decodedToken.userFirstName,
+              instructorEmail: decodedToken.instructorEmail,
+              userName: decodedToken.instructorFirstName,
               role: decodedToken.role,
               authStatus: true,
             },
           })
         ) {
-          navigate("/submitdb");
+          navigate("/home");
         } else {
           navigate("/");
         }
@@ -371,9 +231,9 @@ function LogInSignUp({ errorStatus }) {
                 <div className="form-input">
                   <input
                     type="email"
-                    name="userEmail"
+                    name="instructorEmail"
                     placeholder="Email address"
-                    value={loginData.userEmail}
+                    value={loginData.instructorEmail}
                     onChange={handleLoginChange}
                     required
                   />
@@ -381,18 +241,14 @@ function LogInSignUp({ errorStatus }) {
                 <div className="form-input password">
                   <input
                     type={showPassword ? "text" : "password"}
-                    name="password"
+                    name="instructorPassword"
                     placeholder="Password"
                     value={loginData.password}
                     onChange={handleLoginChange}
                     required
                   />
                   <span onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? (
-                      <AiOutlineEye />
-                    ) : (
-                      <AiOutlineEyeInvisible />
-                    )}
+                    {showPassword ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
                   </span>
                 </div>
                 <div className="btn-login">
@@ -436,120 +292,65 @@ function LogInSignUp({ errorStatus }) {
                 <div className="row">
                   <div className="form-input col-md-6">
                     <input
-                      name="userFirstName"
+                      name="instructorFirstName"
                       type="text"
                       placeholder="First Name"
-                      value={signupData.userFirstName}
+                      value={signupData.instructorFirstName}
                       onChange={handleSignupChange}
                       required
                     />
                   </div>
                   <div className="form-input col-md-6">
                     <input
-                      name="userLastName"
+                      name="instructorLastName"
                       type="text"
                       placeholder="Last Name"
-                      value={signupData.userLastName}
+                      value={signupData.instructorLastName}
                       onChange={handleSignupChange}
                       required
                     />
                   </div>
                 </div>
-
+                <div className="form-input">
+                  <select
+                    name="instructorAssignedCourse"
+                    value={signupData.instructorAssignedCourse}
+                    onChange={handleSignupChange}
+                    className="form-select"
+                    required
+                  >
+                    <option value="" disabled>
+                      Select your Course
+                    </option>
+                    {allCourses?.map((SingleCourse) => (
+                      <option key={SingleCourse.courseId} value={SingleCourse.courseName}>
+                        {SingleCourse.courseName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <div className="form-input">
                   <input
-                    name="userEmail"
+                    name="instructorEmail"
                     type="email"
                     placeholder="Email address"
-                    value={signupData.userEmail}
+                    value={signupData.instructorEmail}
                     onChange={handleSignupChange}
                     required
                   />
-                </div>
-
-                <div className="row">
-                  <div className="form-input col-md-6">
-                    <select
-                      name="Group"
-                      value={signupData.Group}
-                      onChange={handleSignupChange}
-                      required
-                    >
-                      <option value="" disabled>
-                        Select Group
-                      </option>
-                      <option value="Group 1">Group 1</option>
-                      <option value="Group 2">Group 2</option>
-                      <option value="Group 3">Group 3</option>
-                      <option value="Group 4">Group 4</option>
-                    </select>
-                  </div>
-                  <div className="form-input col-md-6">
-                    <select
-                      name="Batch"
-                      value={signupData.Batch}
-                      onChange={handleSignupChange}
-                      required
-                    >
-                      <option value="" disabled>
-                        Select Batch (Month)
-                      </option>
-                      <option value="January">January</option>
-                      <option value="February">February</option>
-                      <option value="March">March</option>
-                      <option value="April">April</option>
-                      <option value="May">May</option>
-                      <option value="June">June</option>
-                      <option value="July">July</option>
-                      <option value="August">August</option>
-                      <option value="September">September</option>
-                      <option value="October">October</option>
-                      <option value="November">November</option>
-                      <option value="December">December</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="form-input col-md-6">
-                    <input
-                      name="Year"
-                      type="number"
-                      placeholder="Year"
-                      value={signupData.Year}
-                      onChange={handleSignupChange}
-                      min="2000"
-                      max={new Date().getFullYear() + 1}
-                      required
-                    />
-                  </div>
-                  <div className="form-input col-md-6">
-                    <input
-                      name="userPhoneNumber"
-                      type="text"
-                      placeholder="Phone Number"
-                      value={signupData.userPhoneNumber}
-                      onChange={handleSignupChange}
-                      required
-                    />
-                  </div>
                 </div>
 
                 <div className="form-input password">
                   <input
                     type={showPassword ? "text" : "password"}
-                    name="password"
+                    name="instructorPassword"
                     placeholder="Password"
-                    value={signupData.password}
+                    value={signupData.instructorPassword}
                     onChange={handleSignupChange}
                     required
                   />
                   <span onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? (
-                      <AiOutlineEye />
-                    ) : (
-                      <AiOutlineEyeInvisible />
-                    )}
+                    {showPassword ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
                   </span>
                 </div>
 
@@ -568,3 +369,4 @@ function LogInSignUp({ errorStatus }) {
 }
 
 export default LogInSignUp;
+

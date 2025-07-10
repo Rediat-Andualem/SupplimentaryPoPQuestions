@@ -3,7 +3,7 @@ const crypto = require("crypto");
 const { Op, where } = require('sequelize');
 const jwt = require("jsonwebtoken");
 const {Instructor,sequelize} = require("../models");
-
+const nodemailer = require('nodemailer')
 
 const registerInstructor = async (req, res) => {
   const {
@@ -76,7 +76,7 @@ const registerInstructor = async (req, res) => {
 
 const instructorLogIn = async (req,res)=>{
 const { instructorEmail, instructorPassword } = req.body;
-
+console.log(instructorEmail, instructorPassword)
   if (!instructorEmail || !instructorPassword) {
     return res.status(400).json({ message: "All fields are required." });
   }
@@ -330,18 +330,18 @@ const { instructorId, role} = req.body;
 
 const forgotPassword = async (req, res) => {
   const { instructorEmail } = req.body;
-
+ console.log(req.body)
   try {
     const findInstructor = await Instructor.findOne({
       attributes: ["instructorId", "instructorEmail"],
-      where: { userEmail : instructorEmail },
+      where: { instructorEmail },
     });
 
     if (!findInstructor) {
       return res.status(404).json({ message: "Password Reset Email sent!." });
     }
 
-    const updateLink = `${process.env.FRONTEND_URL}/reset-password/${findInstructor.instructorEmail}`;
+    const updateLink = `${process.env.FRONTEND_URL}/reset-password/${findInstructor.instructorId}`;
     const mailSender = nodemailer.createTransport({
       service: "gmail",
       port: 465,
@@ -353,7 +353,7 @@ const forgotPassword = async (req, res) => {
 
     const emailContent = {
       from: process.env.EMAIL_USER,
-      to: user.userEmail,
+      to: findInstructor.instructorEmail,
       subject: "Password Reset Request",
       html: `
       <!DOCTYPE html>
@@ -447,7 +447,6 @@ const forgotPassword = async (req, res) => {
 const updateUserPassword = async (req, res) => {
   const { user_new_password } = req.body;
   const { instructorId } = req.params;
-
   try {
     const userData = await Instructor.findOne({
       attributes: ["instructorId"],

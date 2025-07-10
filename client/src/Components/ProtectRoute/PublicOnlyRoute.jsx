@@ -6,7 +6,7 @@ const PublicOnlyRoute = ({ children }) => {
   const auth = useAuthUser();
 
   if (auth?.authStatus) {
-    return <Navigate to="/submitdb" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   return children;

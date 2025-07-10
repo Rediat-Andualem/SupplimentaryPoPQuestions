@@ -36,7 +36,7 @@ function Dashboard() {
 <li>An approval email will be sent to your registered email address after sign-up.</li>
             </ul>
           
-           <img className="groupImage"  src={groupImage} alt="" />
+           {/* <img className="groupImage"  src={groupImage} alt="" /> */}
         
           </div>
         </div>

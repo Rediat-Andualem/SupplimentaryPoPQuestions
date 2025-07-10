@@ -1,5 +1,5 @@
 const express = require('express');
-const {registerInstructor,instructorLogIn,InstructorVerification,InstructorActiveDeactive,deleteInstructorProfile,updateInstructorRole ,deleteUnconfirmedUsers,getAllInstructorsProfile,getInstructorsForVerification} = require('../Controllers/InstructorC.js'); 
+const {registerInstructor,instructorLogIn,InstructorVerification,InstructorActiveDeactive,deleteInstructorProfile,updateInstructorRole ,deleteUnconfirmedUsers,forgotPassword,getAllInstructorsProfile,getInstructorsForVerification,updateUserPassword} = require('../Controllers/InstructorC.js'); 
 const {checkRole,authenticateToken,} = require('../Auth/Auth.js')
 
 let InstructorRouter = express.Router();
@@ -14,6 +14,8 @@ InstructorRouter.delete('/deleteUnConfirmedUser',authenticateToken,checkRole(['1
 InstructorRouter.get('/getAllForVerification',authenticateToken,checkRole(['1','2']),getInstructorsForVerification);  
 InstructorRouter.get('/getAllInstructors',authenticateToken,checkRole(['1','2']),getAllInstructorsProfile);  
 InstructorRouter.put('/updateInstructorRole',authenticateToken,checkRole(['1','2']),updateInstructorRole);  
+InstructorRouter.post('/emailForPassword',forgotPassword);  
+InstructorRouter.post('/updatePassword/:instructorId',updateUserPassword);  
 
 
 module.exports = {InstructorRouter};
