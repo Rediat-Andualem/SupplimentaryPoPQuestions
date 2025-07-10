@@ -58,6 +58,8 @@ db.syncTablesInOrder = async () => {
     await db.Courses.sync({ alter: true });
     await db.Instructor.sync({ alter: true });
     await db.QuestionAndAnswerTable.sync({ alter: true });
+    await db.Phase.sync({ alter: true });
+    await db.Week.sync({ alter: true });
     console.log('✅ Tables created in order successfully');
   } catch (error) {
     console.error('❌ Error syncing tables:', error);

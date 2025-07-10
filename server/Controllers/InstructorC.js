@@ -51,7 +51,6 @@ const registerInstructor = async (req, res) => {
         instructorActiveStatus,
         instructorRole
       });
-
       const authToken = jwt.sign(
         {
           instructorId: InstructorProfile.instructorId,

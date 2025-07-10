@@ -127,6 +127,7 @@ function LogInSignUp({ errorStatus }) {
 
       if (token) {
         if (
+         
           signIn({
             auth: {
               token,
@@ -134,11 +135,14 @@ function LogInSignUp({ errorStatus }) {
               expiresIn: 4320,
             },
             userState: {
-              userId: decodedToken.userId,
+              userId: decodedToken.instructorId,
               instructorEmail: decodedToken.instructorEmail,
-              userName: decodedToken.instructorFirstName,
-              role: decodedToken.role,
-              authStatus: true,
+              instructorFirstName: decodedToken.instructorFirstName,
+              role: decodedToken.instructorRole,
+              instructorAssignedCourse : decodedToken.instructorAssignedCourse,
+              instructorVerification: decodedToken.instructorVerification,
+              instructorActiveStatus : decodedToken.instructorActiveStatus,
+              authStatus :true
             },
           })
         ) {
@@ -170,7 +174,6 @@ function LogInSignUp({ errorStatus }) {
       const res = await axiosInstance.post("/Instructor/instructorLogin", trimmedLoginData);
       const token = res.headers["authorization"]?.split(" ")[1];
       const decodedToken = jwtDecode(token);
-
       if (token) {
         if (
           signIn({
@@ -180,14 +183,18 @@ function LogInSignUp({ errorStatus }) {
               expiresIn: 4320,
             },
             userState: {
-              userId: decodedToken.userId,
+              userId: decodedToken.instructorId,
               instructorEmail: decodedToken.instructorEmail,
-              userName: decodedToken.instructorFirstName,
-              role: decodedToken.role,
-              authStatus: true,
+              instructorFirstName: decodedToken.instructorFirstName,
+               role: decodedToken.instructorRole,
+               instructorAssignedCourse : decodedToken.instructorAssignedCourse,
+              instructorVerification: decodedToken.instructorVerification,
+              instructorActiveStatus : decodedToken.instructorActiveStatus,
+              authStatus :true
             },
           })
         ) {
+          console.log("Reached")
           navigate("/home");
         } else {
           navigate("/");
@@ -323,7 +330,7 @@ function LogInSignUp({ errorStatus }) {
                       Select your Course
                     </option>
                     {allCourses?.map((SingleCourse) => (
-                      <option key={SingleCourse.courseId} value={SingleCourse.courseName}>
+                      <option key={SingleCourse.courseId} value={SingleCourse.courseId}>
                         {SingleCourse.courseName}
                       </option>
                     ))}
@@ -369,4 +376,5 @@ function LogInSignUp({ errorStatus }) {
 }
 
 export default LogInSignUp;
+
 
