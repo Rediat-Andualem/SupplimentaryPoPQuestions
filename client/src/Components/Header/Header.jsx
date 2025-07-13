@@ -145,7 +145,10 @@ function Header() {
           </Nav.Link>
 
           <Nav.Link as={Link} to='/postqanda' className={`${styles.forTextColor} ${styles.underline}`}>
-            <h5>Manage questions</h5>
+            <h5>Upload questions</h5>
+          </Nav.Link>
+          <Nav.Link as={Link} to='/manageQuestions' className={`${styles.forTextColor} ${styles.underline}`}>
+            <h5>Manage uploaded questions</h5>
           </Nav.Link>
 
           {auth?.role === "1" && (

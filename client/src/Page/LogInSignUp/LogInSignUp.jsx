@@ -135,7 +135,7 @@ function LogInSignUp({ errorStatus }) {
               expiresIn: 4320,
             },
             userState: {
-              userId: decodedToken.instructorId,
+              instructorId: decodedToken.instructorId,
               instructorEmail: decodedToken.instructorEmail,
               instructorFirstName: decodedToken.instructorFirstName,
               role: decodedToken.instructorRole,
@@ -183,7 +183,7 @@ function LogInSignUp({ errorStatus }) {
               expiresIn: 4320,
             },
             userState: {
-              userId: decodedToken.instructorId,
+              instructorId: decodedToken.instructorId,
               instructorEmail: decodedToken.instructorEmail,
               instructorFirstName: decodedToken.instructorFirstName,
                role: decodedToken.instructorRole,
@@ -194,7 +194,7 @@ function LogInSignUp({ errorStatus }) {
             },
           })
         ) {
-          console.log("Reached")
+       
           navigate("/home");
         } else {
           navigate("/");

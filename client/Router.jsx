@@ -11,6 +11,7 @@ import PageNotFound from "./src/Page/PageNotFound/PageNotFound.jsx";
 import PublicOnlyRoute from "./src/components/ProtectRoute/PublicOnlyRoute.jsx";
 import Home from "./src/Page/Home/Home.jsx";
 import PopUpSection from './src/Page/QuestionManagement/PopUpSection.jsx'
+import ManageQuestions from "./src/Page/ManageQuestions/ManageQuestions.jsx";
 function Routing() {
   return (
     <Routes>
@@ -76,6 +77,16 @@ function Routing() {
           
             <LayOut showFooter={true} showHeader={true}>
               <PopUpSection />
+            </LayOut>
+
+        }
+      />
+            <Route
+        path="/manageQuestions"
+        element={
+          
+            <LayOut showFooter={true} showHeader={true}>
+              <ManageQuestions />
             </LayOut>
 
         }
