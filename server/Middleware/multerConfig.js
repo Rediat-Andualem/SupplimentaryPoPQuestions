@@ -18,7 +18,7 @@ const zipFileFilter = (req, file, cb) => {
   }
 };
 
-const limits = { fileSize: 10 * 1024 * 1024 }; // 10MB
+const limits = { fileSize: 10 * 1024 * 1024 }; // 10MB ማክሲመም 
 
 const questionAnswerUpload = (() => {
   const questionFolder = path.join(__dirname, "../STORE/QuestionStore");
@@ -30,7 +30,7 @@ const questionAnswerUpload = (() => {
 
 
 destination: (req, file, cb) => {
-  if (file.fieldname === "questionReferenceLink") {
+  if (file.fieldname === "QuestionReferenceLink") {
     cb(null, questionFolder);
   } else if (file.fieldname === "AnswerReferenceLink") {
     cb(null, answerFolder);
@@ -52,7 +52,7 @@ destination: (req, file, cb) => {
     fileFilter: zipFileFilter,
     limits
   }).fields([
-    { name: "questionReferenceLink", maxCount: 1 },
+    { name: "QuestionReferenceLink", maxCount: 1 },
     { name: "AnswerReferenceLink", maxCount: 1 },
   ]);
 })();

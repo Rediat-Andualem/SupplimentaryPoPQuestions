@@ -21,7 +21,7 @@ const uploadQuestionAndAnswer = async (req, res) => {
         message: "instructorId, courseId, and phase are required fields."
       });
     }
-    const questionFile = req.files?.["questionReferenceLink"]?.[0];
+    const questionFile = req.files?.["QuestionReferenceLink"]?.[0];
     const answerFile = req.files?.["AnswerReferenceLink"]?.[0];
 
     if (!questionFile) {
@@ -51,12 +51,69 @@ const uploadQuestionAndAnswer = async (req, res) => {
     });
   } catch (error) {
     console.error("Upload question and answer error:", error.message);
+    return res.status(500).json(error.message);
+  }
+};
+
+const getAllQuestions = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+
+    if (!courseId) {
+      return res.status(400).json({ message: "courseId not found" });
+    }
+
+    const questions = await QuestionAndAnswerTable.findAll({
+      where: { courseId },
+      order: [["createdAt", "DESC"]],
+      raw: true,
+    });
+
+    const phaseIds = questions.map(q => q.phase).filter(Boolean);
+    const weekIds = questions.map(q => q.week).filter(Boolean);
+
+    // Get all relevant phases
+    const phases = await db.Phase.findAll({
+      where: { phaseId: phaseIds },
+      attributes: ["phaseId", "phaseName"],
+      raw: true,
+    });
+
+    // Get all relevant weeks
+    const weeks = await db.Week.findAll({
+      where: { WeekId: weekIds },
+      attributes: ["WeekId", "WeekName"],
+      raw: true,
+    });
+
+    // Create mapping objects
+    const phaseMap = {};
+    phases.forEach(p => {
+      phaseMap[p.phaseId] = p.phaseName;
+    });
+
+    const weekMap = {};
+    weeks.forEach(w => {
+      weekMap[w.WeekId] = w.WeekName;
+    });
+
+    // Enrich each question record
+    const enrichedQuestions = questions.map(q => ({
+      ...q,
+      phaseName: phaseMap[q.phase] || null,
+      weekName: weekMap[q.week] || null,
+    }));
+
+    return res.status(200).json(enrichedQuestions);
+  } catch (error) {
+    console.error("Get all questions error:", error.message);
     return res.status(500).json({
-      message: "Server error",
-      error: error.message
+      message: "Server error while fetching questions.",
+      error: error.message,
     });
   }
 };
+
 
 const sendQuestionFiles = async(req,res)=>{
 const { questionFileName } = req.params;
@@ -209,4 +266,4 @@ const cleanUnlinkedFiles = async (req,res)=> {
   }
 }
 
-module.exports = { uploadQuestionAndAnswer,sendQuestionFiles,sendAnswerFiles,deleteQuestionAndAnswer,cleanUnlinkedFiles};  
+module.exports = { uploadQuestionAndAnswer,sendQuestionFiles,sendAnswerFiles,deleteQuestionAndAnswer,cleanUnlinkedFiles,getAllQuestions};  

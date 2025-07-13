@@ -1,4 +1,6 @@
-const { Phase } = require('../models'); // Adjust path if needed
+const { Phase } = require('../models'); 
+const { Week } = require('../models');  
+
 
 const createPhase = async (req, res) => {
   const { phaseName } = req.body;
@@ -28,9 +30,6 @@ const createPhase = async (req, res) => {
   }
 };
 
-
-
-
 const deletePhase = async (req, res) => {
   const { phaseId } = req.params;
 
@@ -49,7 +48,19 @@ const deletePhase = async (req, res) => {
   }
 };
 
-const { Week } = require('../models'); // Adjust path
+const getAllPhases = async (req, res) => {
+  try {
+    const phases = await Phase.findAll({
+      order: [['createdAt', 'DESC']], 
+    });
+
+    res.status(200).json({ phases });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error while fetching phases." });
+  }
+};
+
 
 const createWeek = async (req, res) => {
   const { WeekName } = req.body;
@@ -79,7 +90,6 @@ const createWeek = async (req, res) => {
   }
 };
 
-
 const deleteWeek = async (req, res) => {
   const { WeekId } = req.params;
 
@@ -98,9 +108,25 @@ const deleteWeek = async (req, res) => {
   }
 };
 
+const getAllWeeks = async (req, res) => {
+  try {
+    const weeks = await Week.findAll({
+      order: [['createdAt', 'DESC']], 
+    });
+
+    res.status(200).json({ weeks });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error while fetching weeks." });
+  }
+};
+
+
 module.exports = {
 createPhase,
 deletePhase,
 createWeek,
-deleteWeek
+deleteWeek,
+getAllPhases,
+getAllWeeks
 };
