@@ -75,7 +75,6 @@ const registerInstructor = async (req, res) => {
 
 const instructorLogIn = async (req,res)=>{
 const { instructorEmail, instructorPassword } = req.body;
-console.log(instructorEmail, instructorPassword)
   if (!instructorEmail || !instructorPassword) {
     return res.status(400).json({ message: "All fields are required." });
   }
