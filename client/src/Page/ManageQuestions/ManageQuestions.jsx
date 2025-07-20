@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import './ManageQuestions.css';
-import { axiosInstance } from "../../utility/axiosInstance";
+import {axiosInstance} from '../../Utility/axiosInstance'
 import useAuthHeader from "react-auth-kit/hooks/useAuthHeader";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

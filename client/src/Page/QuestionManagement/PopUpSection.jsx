@@ -4,7 +4,7 @@ import styles from "./popupSection.module.css";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 import useAuthHeader from "react-auth-kit/hooks/useAuthHeader";
-import { axiosInstance } from "../../utility/axiosInstance";
+import {axiosInstance} from "../../Utility/axiosInstance"
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
