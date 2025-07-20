@@ -42,7 +42,7 @@ console.log(auth)
   return (
     <Navbar expand="lg" className={` ${styles.forTheNavbar} `}>
       <Container fluid>
-        <Navbar.Brand className={`${styles.forTextColor} m-2`} as={Link} to="/">
+        <Navbar.Brand className={`${styles.forTextColor} m-2`} as={Link} to="/postqanda">
           <img className={styles.logo} src={logo} alt="logo" />
         </Navbar.Brand>
 
@@ -52,9 +52,9 @@ console.log(auth)
             {/* Intentionally empty to push items to the right */}
           </Nav>
 
-          <Nav.Link onClick={forHome} className={`${styles.forTextColor} ${styles.underline}`}>
+          {/* <Nav.Link onClick={forHome} className={`${styles.forTextColor} ${styles.underline}`}>
             <h5>Home</h5>
-          </Nav.Link>
+          </Nav.Link> */}
           <Nav.Link as={Link} to='/postqanda' className={`${styles.forTextColor} ${styles.underline}`}>
             <h5>Upload questions</h5>
           </Nav.Link>
