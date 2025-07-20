@@ -181,7 +181,7 @@ const deleteInstructorProfile = async (req,res)=>{
     }
 
     // Prevent deleting superAdmin (role = 3)
-    if (checkInstructor.instructorRole === "1") {
+    if (checkInstructor.instructorRole === "2") {
       return res.status(400).json({ message: "Admin cannot be deleted." });
     }
     await checkInstructor.destroy({ transaction: t });
@@ -194,7 +194,6 @@ const deleteInstructorProfile = async (req,res)=>{
     res.status(500).json({ message: "Server error" });
   }
 }
-
 
 
 // clear unconfirmed user 
@@ -290,11 +289,11 @@ const { instructorId, role} = req.body;
       return res.status(404).json({ message: "Instructor not found." });
     }
 
-    if (instructor.instructorRole === "1") {
-      return res.status(400).json({
-        message: "Super admin role cannot be modified.",
-      });
-    }
+    // if (instructor.instructorRole === "1") {
+    //   return res.status(400).json({
+    //     message: "Super admin role cannot be modified.",
+    //   });
+    // }
 
     // Optional: Validate the role input
     const validRoles = ["0", "1", "2", "3", "4"];

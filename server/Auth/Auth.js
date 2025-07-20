@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 
 const authenticateToken = (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1];
-    console.log(token)
     if (!token) return res.sendStatus(401); 
     jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
         if (err) return res.sendStatus(403); 
@@ -24,7 +23,7 @@ const checkRole = (roles) => {
     };
 };
 
-// 1.User role = "0"
+// 1.instructor role = "0"
 // 2.Admin role ="1"
 // 3.Sub Admin role = "2"
 
