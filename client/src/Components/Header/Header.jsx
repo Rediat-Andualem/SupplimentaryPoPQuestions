@@ -143,7 +143,6 @@ function Header() {
           <Nav.Link onClick={forHome} className={`${styles.forTextColor} ${styles.underline}`}>
             <h5>Home</h5>
           </Nav.Link>
-
           <Nav.Link as={Link} to='/postqanda' className={`${styles.forTextColor} ${styles.underline}`}>
             <h5>Upload questions</h5>
           </Nav.Link>

@@ -12,6 +12,7 @@ import PublicOnlyRoute from "./src/components/ProtectRoute/PublicOnlyRoute.jsx";
 import Home from "./src/Page/Home/Home.jsx";
 import PopUpSection from './src/Page/QuestionManagement/PopUpSection.jsx'
 import ManageQuestions from "./src/Page/ManageQuestions/ManageQuestions.jsx";
+import AdminManagement from "./src/Page/AdminPage/AdminManagement.jsx";
 function Routing() {
   return (
     <Routes>
@@ -68,6 +69,14 @@ function Routing() {
         element={
             <LayOut showFooter={true} showHeader={true}>
               <Home />
+            </LayOut>
+        }
+      />
+              <Route
+        path="/forAdmin"
+        element={
+            <LayOut showFooter={true} showHeader={true}>
+              <AdminManagement />
             </LayOut>
         }
       />

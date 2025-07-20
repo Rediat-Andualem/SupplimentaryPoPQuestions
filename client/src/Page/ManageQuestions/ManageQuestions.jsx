@@ -10,18 +10,25 @@ import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import Button from "react-bootstrap/Button";
+import Modal from 'react-bootstrap/Modal';
+
+
 
 
 function ManageQuestions() {
   const auth = useAuthUser();
   const authHeader = useAuthHeader();
-    const [QuestionAndAnswer, setQuestionAndAnswer] = useState([]);
+  const [QuestionAndAnswer, setQuestionAndAnswer] = useState([]);
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [selectedDeleteId, setSelectedDeleteId] = useState(null);
+
   useEffect(() => {
     getAllQuestions();
   }, []);
 
   const getAllQuestions = async () => {
-       let courseId = auth.instructorAssignedCourse;
+    let courseId = auth.instructorAssignedCourse;
     try {
       let allQandA = await axiosInstance.get(
         `/Question/getAllQ&A/${courseId}`,
@@ -37,135 +44,93 @@ function ManageQuestions() {
     }
   };
 
-  const deleteQuestion = async (questionAndAnswerId)=>{
-        try {
+  const handleDeleteClick = (questionAndAnswerId) => {
+    setSelectedDeleteId(questionAndAnswerId);
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
       await axiosInstance.delete(
-        `/Question/deleteQandA/${questionAndAnswerId}`,
+        `/Question/deleteQandA/${selectedDeleteId}`,
         {
           headers: {
             Authorization: authHeader,
           },
         }
       );
+      setShowConfirmModal(false);
+      setSelectedDeleteId(null);
       getAllQuestions();
     } catch (error) {
       console.error("Error deleting answer:", error);
     }
-  }
+  };
 
-//  const getQuestions = async (questionReferenceLink) => {
-//   try {
-//     const response = await axiosInstance.get (`/Question/getQuestion/${questionReferenceLink}`, {
-//       method: "GET",
-//        headers: {
-//             Authorization: authHeader,
-//           },
-//     });
+  const handleCancelDelete = () => {
+    setShowConfirmModal(false);
+    setSelectedDeleteId(null);
+  };
 
-//     if (!response.ok) {
-//       throw new Error("Failed to fetch question file.");
-//     }
+  const getAnswer = async (answerReferenceLink) => {
+    try {
+      const response = await fetch(`${axiosInstance.defaults.baseURL}/Question/getAnswer/${answerReferenceLink}`, {
+        headers: {
+          Authorization: authHeader,
+        },
+      });
 
-//     const blob = await response.blob();
-//     const url = window.URL.createObjectURL(blob);
+      if (!response.ok) throw new Error("Failed to fetch answer file.");
 
-//     // Open file in new tab (if zip, browser will usually download)
-//     window.open(url, "_blank");
-//   } catch (err) {
-//     console.log(err)
-//     console.error("Error fetching question file:", err.message);
-//   }
-// };
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
 
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", answerReferenceLink);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download answer error:", error.message);
+    }
+  };
 
-// const getAnswer = async (answerReferenceLink) => {
-//   try {
-//     const response = await axiosInstance.get (`/Question/getAnswer/${answerReferenceLink}`, {
-//       method: "GET",
-//        headers: {
-//             Authorization: authHeader,
-//           },
-//     });
+  const getQuestions = async (questionReferenceLink) => {
+    try {
+      const response = await fetch(`${axiosInstance.defaults.baseURL}/Question/getQuestion/${questionReferenceLink}`, {
+        headers: {
+          Authorization: authHeader,
+        },
+      });
 
-//     if (!response.ok) {
-//       throw new Error("Failed to fetch answer file.");
-//     }
+      if (!response.ok) throw new Error("Failed to fetch question file.");
 
-//     const blob = await response.blob();
-//     const url = window.URL.createObjectURL(blob);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
 
-//     // Open or download
-//     window.open(url, "_blank");
-//   } catch (err) {
-//     console.error("Error fetching answer file:", err.message);
-//   }
-// };
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", questionReferenceLink);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download question error:", error.message);
+    }
+  };
 
-const getAnswer = async (answerReferenceLink) => {
-  try {
-
-    const response = await fetch(`${axiosInstance.defaults.baseURL}/Question/getAnswer/${answerReferenceLink}`, {
-     headers: {
-            Authorization: authHeader,
-          },
-    });
-
-    if (!response.ok) throw new Error("Failed to fetch answer file.");
-
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", answerReferenceLink); 
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error("Download answer error:", error.message);
-  }
-};
-
-const getQuestions = async (questionReferenceLink) => {
-  try {
-
-    const response = await fetch(`${axiosInstance.defaults.baseURL}/Question/getQuestion/${questionReferenceLink}`, {
-     headers: {
-            Authorization: authHeader,
-          },
-    });
-
-
-    if (!response.ok) throw new Error("Failed to fetch question file.");
-
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", questionReferenceLink); 
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error("Download question error:", error.message);
-  }
-};
-
-
-const getFileName = (fullPath) => {
-  return fullPath?.split("/").pop(); 
-};
-
-console.log(QuestionAndAnswer)
+  const getFileName = (fullPath) => {
+    return fullPath?.split("/").pop();
+  };
 
   const paginationModel = { page: 0, pageSize: 10 };
-  return (
 
+  return (
     <div>
-         <div className="text-underline container mx-auto row m-4">
+      <div className="text-underline container mx-auto row m-4">
         <h4 className="text-center">PopUp Questions</h4>
         <hr />
 
@@ -183,8 +148,7 @@ console.log(QuestionAndAnswer)
                   week: singleQandA.weekName,
                   titleOfTheWeek: singleQandA.titleOfTheWeek,
                   questionReferenceLink: getFileName(singleQandA.questionReferenceLink),
-                  AnswerReferenceLink: getFileName(singleQandA.AnswerReferenceLink),               
-                  additionalRecourseLink: singleQandA.additionalRecourseLink,
+                  AnswerReferenceLink: getFileName(singleQandA.AnswerReferenceLink),
                   additionalRecourseLink: singleQandA.additionalRecourseLink,
                   questionAndAnswerId: singleQandA.questionAndAnswerId,
                 };
@@ -204,48 +168,47 @@ console.log(QuestionAndAnswer)
                 {
                   field: "questionReferenceLink",
                   headerName: "Question",
-                   renderCell: (params) => (
-               
-                     <Button
-                        style={{ margin: "5px" }}
-                        onClick={() => getQuestions(params.row.questionReferenceLink)}
-                        variant="primary"
-                      >Download
-                      </Button>
+                  renderCell: (params) => (
+                    <Button
+                      style={{ margin: "5px" }}
+                      onClick={() => getQuestions(params.row.questionReferenceLink)}
+                      variant="primary"
+                    >
+                      Download
+                    </Button>
                   ),
                   width: 115,
                 },
-
                 {
                   field: "AnswerReferenceLink",
                   headerName: "Answer",
                   renderCell: (params) => (
-               
-                     <Button
-                        style={{ margin: "5px" }}
-                        onClick={() => getAnswer(params.row.AnswerReferenceLink)}
-                        variant="info"
-                      >
-                        Download
-                      </Button>
+                    <Button
+                      style={{ margin: "5px" }}
+                      onClick={() => getAnswer(params.row.AnswerReferenceLink)}
+                      variant="info"
+                    >
+                      Download
+                    </Button>
                   ),
                   width: 115,
                 },
-
-                 { field: "additionalRecourseLink", headerName: "Reference Link", width: 200 },
-
+                {
+                  field: "additionalRecourseLink",
+                  headerName: "Reference Link",
+                  width: 200
+                },
                 {
                   field: "questionAndAnswerId",
                   headerName: "Action",
                   renderCell: (params) => (
-               
-                     <Button
-                        style={{ margin: "5px" }}
-                        onClick={() => deleteQuestion(params.row.questionAndAnswerId)}
-                        variant="danger"
-                      >
-                        Delete
-                      </Button>
+                    <Button
+                      style={{ margin: "5px" }}
+                      onClick={() => handleDeleteClick(params.row.questionAndAnswerId)}
+                      variant="danger"
+                    >
+                      Delete
+                    </Button>
                   ),
                   width: 115,
                 },
@@ -258,8 +221,32 @@ console.log(QuestionAndAnswer)
           </Paper>
         )}
       </div>
+
+      {/* Confirmation Modal */}
+      <Modal show={showConfirmModal} onHide={handleCancelDelete} centered>
+        <Modal.Body style={{ backgroundColor: "#add8e6" }}>
+          <h5>Are you sure you want to delete this question?</h5>
+          <div className="d-flex justify-content-end mt-4">
+            <Button
+              variant="danger"
+              className="me-2"
+              onClick={handleConfirmDelete}
+            >
+              Yes
+            </Button>
+            <Button
+              style={{ backgroundColor: "#d3d3d3", borderColor: "#d3d3d3", color: "black" }}
+              onClick={handleCancelDelete}
+            >
+              Cancel
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      <ToastContainer />
     </div>
-  )
+  );
 }
 
-export default ManageQuestions
+export default ManageQuestions;

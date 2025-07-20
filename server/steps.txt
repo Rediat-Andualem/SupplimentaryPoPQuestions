@@ -1,0 +1,4 @@
+1. Add course, Add phase, and Add week form should be added ( from sintae project)
+2. List of users display with delete feature and on that add verify user, active or deactivate user form should also be integrated and in teh front end if the user is verified and active only, they can proceed to main page else a page should load "your account is not verified or activated, please contact Admin"
+3.display all phases popUp question from all the cources and when selectign teh coruses , it should come from backend and display as a dropdown 
+4. test for zip and also  larger files 
