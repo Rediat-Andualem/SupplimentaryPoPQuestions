@@ -50,13 +50,23 @@ function UploadQuestionAndAnswer() {
     }
   };
 
-  const handleQuestionDrop = (acceptedFiles) => {
-    setQuestionFile(acceptedFiles[0]);
-  };
+const handleQuestionDrop = (acceptedFiles) => {
+  const file = acceptedFiles[0];
+  if (file && file.size > 10 * 1024 * 1024) {
+    toast.warning("Question ZIP file size must be 10MB or less.");
+    return;
+  }
+  setQuestionFile(file);
+};
 
-  const handleAnswerDrop = (acceptedFiles) => {
-    setAnswerFile(acceptedFiles[0]);
-  };
+const handleAnswerDrop = (acceptedFiles) => {
+  const file = acceptedFiles[0];
+  if (file && file.size > 10 * 1024 * 1024) {
+    toast.warning("Answer ZIP file size must be 10MB or less.");
+    return;
+  }
+  setAnswerFile(file);
+};
 
   const validate = () => {
     if (!selectedPhase.trim()) {
