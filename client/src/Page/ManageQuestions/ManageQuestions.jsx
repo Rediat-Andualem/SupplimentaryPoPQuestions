@@ -131,7 +131,7 @@ function ManageQuestions() {
   return (
     <div>
       <div className="text-underline container mx-auto row m-4">
-        <h4 className="text-center">PopUp Questions</h4>
+        <h4 className="text-center">PopUp Questions </h4>
         <hr />
 
         {!QuestionAndAnswer || QuestionAndAnswer.length === 0 ? (

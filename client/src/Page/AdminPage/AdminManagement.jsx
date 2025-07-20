@@ -1,6 +1,8 @@
 import React from "react";
 import ReusableForm from "../../Components/ReusableForm/ReusableForm";
-import { axiosInstance } from "../../utility/axiosInstance";
+import ManageInstructors from "./ManageInstructors/ManageInstructors";
+import DeleteUnconfirmedUsers from "./DeleteUnverifiedUsers/DeleteUnverifeid";
+import ManageAllQuestions from "./ManageAllUploadedQuestions/ManageAllQuestions";
 function AdminManagement() {
   let handleCourseSubmit = () => {
     console.log("enter course name");
@@ -40,6 +42,12 @@ function AdminManagement() {
       />
     </div>
   </div>
+  <hr />
+  <ManageInstructors/>
+  <hr />
+  <DeleteUnconfirmedUsers/>
+  <hr />
+  <ManageAllQuestions/>
 </div>
 
   );

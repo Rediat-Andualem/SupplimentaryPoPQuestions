@@ -13,6 +13,7 @@ import Home from "./src/Page/Home/Home.jsx";
 import PopUpSection from './src/Page/QuestionManagement/PopUpSection.jsx'
 import ManageQuestions from "./src/Page/ManageQuestions/ManageQuestions.jsx";
 import AdminManagement from "./src/Page/AdminPage/AdminManagement.jsx";
+import UnVerInActive from "./src/Page/UnverifiedOrInactiveUserHandler/UnVerInActive.jsx";
 function Routing() {
   return (
     <Routes>
@@ -96,6 +97,16 @@ function Routing() {
           
             <LayOut showFooter={true} showHeader={true}>
               <ManageQuestions />
+            </LayOut>
+
+        }
+      />
+            <Route
+        path="/inactiveUnverified"
+        element={
+          
+            <LayOut showFooter={true} showHeader={true}>
+              <UnVerInActive />
             </LayOut>
 
         }

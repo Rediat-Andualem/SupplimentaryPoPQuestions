@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { axiosInstance } from "../../Utility/axiosInstance";
 import useSignIn from "react-auth-kit/hooks/useSignIn";
 import { jwtDecode } from "jwt-decode";
-
+import useAuthUser from 'react-auth-kit/hooks/useAuthUser';
 
 function LogInSignUp({ errorStatus }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,7 +16,7 @@ function LogInSignUp({ errorStatus }) {
 
   const navigate = useNavigate();
   const signIn = useSignIn();
-
+  const auth = useAuthUser();
   const [signupData, setSignupData] = useState({
     instructorFirstName: "",
     instructorLastName: "",
@@ -146,7 +146,13 @@ function LogInSignUp({ errorStatus }) {
             },
           })
         ) {
-          navigate("/home");
+    
+          if (!decodedToken.instructorVerification || !decodedToken.instructorActiveStatus) {
+  navigate("/inactiveUnverified");
+} else {
+  navigate("/home");
+}
+
         } else {
           navigate("/");
         }
@@ -194,8 +200,12 @@ function LogInSignUp({ errorStatus }) {
             },
           })
         ) {
-       
-          navigate("/home");
+           if (!decodedToken.instructorVerification || !decodedToken.instructorActiveStatus) {
+  navigate("/inactiveUnverified");
+} else {
+  navigate("/home");
+}
+
         } else {
           navigate("/");
         }
